@@ -1,0 +1,124 @@
+#%RAML 1.0
+title: Blog API
+version: v0.000001
+baseUri: http://api.samplehost.com
+types:
+  URI: string
+  user:
+    type: object
+    properties:
+      id: integer
+      displayname: string
+      ldap: string
+      numPosts: integer
+      numComments: integer
+  blogPost:
+    type: object
+    properties:
+      id: integer
+      timestamp: datetime
+      poster: user
+      subject: string
+      postBody: string
+      comments: comment[]
+  comment:
+    type: object
+    properties:
+      id: integer
+      timestamp: datetime
+      commenter: user
+      commBody: string
+
+mediaType: application/json
+
+/users:
+  get:
+    responses:
+      200:
+        body:
+          type: user[]
+      404:
+        body:
+          application/json:
+
+  post:
+    responses:
+      200:
+        body:
+          type: URI
+      400:
+
+  /{userID}:
+    get:
+      responses:
+        200:
+          body:
+            type: user
+    put: #can only be done by resource owner
+      responses:
+        200:
+      body:
+        type: user
+    delete:
+      responses:
+        204:
+
+    /posts:
+      get:
+        queryParameters:
+          subject:
+            displayName: Subject
+            type: string
+            description: The subject line of the blog post
+            required: false
+        responses:
+          200:
+            body:
+              type: blogPost[]
+          404:
+            body:
+              application/json:
+
+      post:
+        responses:
+          200:
+            body:
+              type: URI
+          400:
+
+      /{blogPostID}:
+        get:
+          responses:
+            200:
+              body:
+                type: blogPost
+        delete: #can only be done by resource owner
+          responses:
+            204:
+
+        /comments:
+          get:
+            responses:
+              200:
+                body:
+                  type: comment[]
+              404:
+                body:
+                  application/json:
+
+          post:
+            responses:
+              200:
+                body:
+                  type: URI
+              400:
+
+          /{commentID}:
+            get:
+              responses:
+                200:
+                  body:
+                    type: comment
+            delete: #can only be done by resource owner
+              responses:
+                204:
